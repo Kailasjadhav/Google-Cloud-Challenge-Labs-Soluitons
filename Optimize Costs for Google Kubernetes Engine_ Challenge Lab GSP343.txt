@@ -3,9 +3,11 @@
 TASK 1: 
 
 
-ZONE=us-central1-b
+ZONE=us-east1-d
+Cluster_Name=onlineboutique-cluster-723
+Pool_Name=optimized-pool-2403
 
-gcloud container clusters create Cluster_Name --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --machine-type=e2-standard-2 --num-nodes=2
+gcloud container clusters create $Cluster_Name --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --machine-type=e2-standard-2 --num-nodes=2
 
 kubectl create namespace dev
 
@@ -22,7 +24,7 @@ TASK 2:
 
 
 
-gcloud container node-pools create Pool_Name --cluster=Cluster_Name --machine-type=custom-2-3584 --num-nodes=2 --zone=$ZONE
+gcloud container node-pools create $Pool_Name --cluster=$Cluster_Name --machine-type=custom-2-3584 --num-nodes=2 --zone=$ZONE
 
 for node in $(kubectl get nodes -l cloud.google.com/gke-nodepool=default-pool -o=name); do  kubectl cordon "$node"; done
 
@@ -30,7 +32,7 @@ for node in $(kubectl get nodes -l cloud.google.com/gke-nodepool=default-pool -o
 
 kubectl get pods -o=wide --namespace=dev
 
-gcloud container node-pools delete default-pool --cluster Cluster_Name --zone $ZONE
+gcloud container node-pools delete default-pool --cluster $Cluster_Name --zone $ZONE
 
 
 
@@ -61,18 +63,9 @@ Press ctrl+x and Y then enter, for save and exit
 TASK 4:
 
 
-kubectl autoscale deployment frontend --cpu-percent=50 --min=1 --max=17 --namespace dev
+kubectl autoscale deployment frontend --cpu-percent=50 --min=1 --max=13 --namespace dev
 
 kubectl get hpa --namespace dev
-ZONE=us-central1-b
+ZONE=us-east1-d
 
-gcloud beta container clusters update Cluster_Name --enable-autoscaling --min-nodes 1 --max-nodes 6 --zone=$ZONE
-
-
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-                               Congratulations, you're all done with the lab 😄Don't forget to subscribe our YouTube Channel😄
-
-                                                                 Thanks for watching.!!!!
--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+gcloud beta container clusters update $Cluster_Name --enable-autoscaling --min-nodes 1 --max-nodes 6 --zone=$ZONE
